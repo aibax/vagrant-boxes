@@ -1,0 +1,114 @@
+---
+# file: roles/centos7/tasks/main.yml
+
+- name: "Linuxカーネルのアップデート"
+  yum: name=kernel state=latest
+  register: result
+
+- name: "再起動"
+  command: reboot
+  ignore_errors: yes
+  when: result|changed
+
+- name: "サーバの再起動完了を待機"
+  local_action:
+    wait_for host={{inventory_hostname}} port={{ansible_ssh_port | default(22)}} delay=30
+  when: result|changed
+
+- name: "インストールされているパッケージを最新にアップデート"
+  yum: name=* state=latest
+
+- name: "ユーザー 'vagrant' を作成"
+  user: >
+    name={{username}}
+    password={{password}}
+    home="/home/{{username}}"
+    groups=wheel
+    state=present 
+
+- name: "ユーザー 'vagrant' を sudoers に追加"
+  template: >
+    src=sudoers.j2
+    dest="/etc/sudoers.d/{{username}}"
+    owner=root
+    group=root
+    mode=0400
+
+- name: "ユーザー 'vagrant' に tty なしの sudo を許可"
+  lineinfile: >
+    dest=/etc/sudoers
+    state=present
+    insertafter='^Defaults.*requiretty$'
+    line='Defaults:{{username}}    !requiretty'
+
+- name: "ユーザー 'vagrant' の公開鍵を格納するディレクトリを作成"
+  file: >
+    path="/home/{{username}}/.ssh"
+    state=directory
+    owner={{username}}
+    group={{username}}
+    mode=0700
+
+- name: "ユーザー 'vagrant' の公開鍵をダウンロード"
+  get_url: >
+    url=https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub
+    dest=/home/{{username}}/.ssh/authorized_keys
+    force=true
+    sha256sum=9aa9292172c915821e29bcbf5ff42d4940f59d6a148153c76ad638f5f4c6cd8b
+    owner={{username}}
+    group={{username}}
+    mode=0600
+
+- name: "サービス 'firewalld', 'kdump' を無効化"
+  service: name={{item}} state=stopped enabled=no
+  with_items:
+   - firewalld
+   - kdump
+
+
+# ----------------------------------------
+# VirtualBox Guest Additions のインストール
+# ----------------------------------------
+- name: "VirtualBox Guest Additions のビルドに必要なパッケージをインストール"
+  yum: name={{item}} state=installed
+  with_items:
+    - kernel-devel
+    - kernel-headers
+    - gcc
+    - make
+    - perl
+    - bzip2
+  when: install_virtualbox_guest_additions
+
+- name: "確認"
+  pause: prompt="VirtualBoxのウィンドウのメニューから「デバイス > Guest Additions CD イメージの挿入...」を選択して下さい。 [ENTER]"
+  when: install_virtualbox_guest_additions
+
+- name: "VirtualBox Guest Additions のCDイメージをマウント"
+  mount: name=/media src=/dev/cdrom fstype=iso9660 opts=ro state=mounted
+  when: install_virtualbox_guest_additions
+
+- name: "VirtualBox Guest Additions をインストール"
+  command: "{{item}}"
+  with_items:
+    - /media/VBoxLinuxAdditions.run
+  ignore_errors: yes
+  when: install_virtualbox_guest_additions
+
+- name: "VirtualBox Guest Additions のサービスを有効化"
+  service: name=vboxadd state=running enabled=yes
+  when: install_virtualbox_guest_additions
+
+- name: "VirtualBox Guest Additions のCDイメージをアンマウント"
+  mount: name=/media src=/dev/cdrom fstype=iso9660 state=absent
+  when: install_virtualbox_guest_additions
+
+
+# ----------------------------------------
+# Box化のための最適化処理
+# ----------------------------------------
+- name: "yum のキャッシュを削除"
+  command: yum clean all
+
+- name: "確認"
+  pause: prompt="引き続き最適化処理と vagrant package コマンドを実行してBoxを作成して下さい。 [ENTER]"
