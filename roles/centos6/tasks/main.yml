@@ -1,26 +1,6 @@
 ---
 # file: roles/centos6/tasks/main.yml
 
-# ----------------------------------------
-# 事前作業 > VirtualBoxコンソールから実行
-# ----------------------------------------
-#
-#- name: "eth0を有効化"
-#  lineinfile: >-
-#    dest=/etc/sysconfig/network-scripts/ifcfg-eth0
-#    state=present
-#    backrefs=yes
-#    regexp='^ONBOOT=no'
-#    line='ONBOOT=yes'
-#
-#- name: "SELinuxを無効化"
-#  lineinfile: >-
-#    dest=/etc/sysconfig/selinux
-#    state=present
-#    backrefs=yes
-#    regexp='^SELINUX=(enforcing|permissive)'
-#    line='SELINUX=disabled'
-
 - name: "Linuxカーネルのアップデート"
   yum: name=kernel state=latest
   register: result
@@ -130,34 +110,5 @@
 - name: "yum のキャッシュを削除"
   command: yum clean all
 
-- name: "仮想HDDの領域を最適化 > ストレージの空き領域をゼロで上書き"
-  command: dd if=/dev/zero of=/ZERO bs=1M
-  ignore_errors: yes
-
-- name: "仮想HDDの領域を最適化> ゼロで上書きした領域を削除"
-  command: rm -f /ZERO
-
 - name: "確認"
-  pause: prompt="シャットダウンします。引き続き vagrant package コマンドを実行してBoxを作成して下さい。 [ENTER]"
-
-- name: "シャットダウン"
-  shell: "{{item}}"
-  with_items:
-    - cat /dev/null > ~/.bash_history
-    - shutdown -h now
-
-
-# ----------------------------------------
-# 事後作業 > VirtualBoxコンソールまたはSSHで実行
-# ----------------------------------------
-#
-#- name: "Ansibleの作業ファイルを削除"
-#  shell: "{{item}}"
-#  with_items:
-#    - rm -Rf ~/.ansible
-#    - export HISTSIZE=0;shutdown -h now;
-#  ignore_errors: yes
-
-# rm -Rf ~/.ansible
-# export HISTSIZE=0
-# shutdown -h now
+  pause: prompt="引き続き最適化処理と vagrant package コマンドを実行してBoxを作成して下さい。 [ENTER]"
