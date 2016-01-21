@@ -1,11 +1,11 @@
 ---
-# This playbook create vagrant boxes. 
+# This playbook create CentOS 6 vagrant boxes. 
 
 - hosts: localhost
   remote_user: root
   vars:
     username: vagrant
     password: $1$kiqeNKGY$i2dHFf1/pyUbVL4o19aAh0 # openssl passwd -1 'vagrant'
-    install_virtualbox_guest_additions: false
+    install_virtualbox_guest_additions: true
   roles:
     - centos6
