@@ -3,7 +3,7 @@
 2. SELinuxを無効化
 
 # sed -i -e 's/^ONBOOT=.*$/ONBOOT=yes/g' /etc/sysconfig/network-scripts/ifcfg-eth0 
-# sed -i -e 's/^SELINUX=.*$/SELINUX=disabled/g' /etc/sysconfig/selinux
+# sed -i -e 's/^SELINUX=.*$/SELINUX=disabled/g' /etc/selinux/config
 # reboot
 
 ---------- Ansibleで環境構築 （ローカル） ----------
@@ -23,12 +23,12 @@ $ ansible-playbook -i production centos6.yml --ask-pass
 
 ---------- Boxの作成 （ローカル） ----------
 $ vagrant package --base centos6 package.box
-$ vagrant box add --name CentOS-6.7-x86_64-minimal-ja_JP package.box
+$ vagrant box add --name CentOS-6.8-x86_64-minimal-ja_JP package.box
 $ vagrant box list
 $ rm package.box
 
 ---------- Vagrantで起動 （ローカル） ----------
 Vagrantfileを作成して起動
-$ vagrant init CentOS-6.7-x86_64-minimal-ja_JP
+$ vagrant init CentOS-6.8-x86_64-minimal-ja_JP
 $ vagrant up
 $ vagrant ssh
