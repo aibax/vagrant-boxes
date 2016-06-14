@@ -18,7 +18,6 @@ $ ansible-playbook -i production centos6.yml --ask-pass
 # rm -Rf ~/.ansible
 # dd if=/dev/zero of=/ZERO bs=1M
 # rm -f /ZERO
-# rm -Rf ~/.ansible
 # export HISTSIZE=0
 # shutdown -h now
 
