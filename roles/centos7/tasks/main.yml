@@ -59,12 +59,6 @@
     group={{username}}
     mode=0600
 
-- name: "サービス 'firewalld', 'kdump' を無効化"
-  service: name={{item}} state=stopped enabled=no
-  with_items:
-   - firewalld
-   - kdump
-
 
 # ----------------------------------------
 # VirtualBox Guest Additions のインストール
