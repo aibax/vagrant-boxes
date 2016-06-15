@@ -3,7 +3,7 @@
 2. SELinuxを無効化
 
 # sed -i -e 's/^ONBOOT=.*$/ONBOOT=yes/g' /etc/sysconfig/network-scripts/ifcfg-(インタフェース名)
-# sed -i -e 's/^SELINUX=.*$/SELINUX=disabled/g' /etc/sysconfig/selinux
+# sed -i -e 's/^SELINUX=.*$/SELINUX=disabled/g' /etc/selinux/config
 # reboot
 
 ---------- Ansibleで環境構築 （ローカル） ----------
