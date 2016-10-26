@@ -94,7 +94,7 @@
   when: install_virtualbox_guest_additions
 
 - name: "VirtualBox Guest Additions のCDイメージをアンマウント"
-  mount: name=/media src=/dev/cdrom fstype=iso9660 state=absent
+  mount: name=/media src=/dev/cdrom fstype=iso9660 state=unmounted
   when: install_virtualbox_guest_additions
 
 
