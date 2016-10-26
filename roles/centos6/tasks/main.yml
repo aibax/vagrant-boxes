@@ -90,8 +90,7 @@
   shell: "{{item}}"
   with_items:
     - rm -f /etc/init.d/vboxadd
-    #- /mnt/VBoxLinuxAdditions.run ← http://qiita.com/Ikumi/items/4594ff64d2f62303bd2b
-    - export MAKE='/usr/bin/gmake -i';/mnt/VBoxLinuxAdditions.run;
+    - /mnt/VBoxLinuxAdditions.run
   ignore_errors: yes
   when: install_virtualbox_guest_additions
 
