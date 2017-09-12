@@ -1,6 +1,6 @@
 # 初期インストール （VirtualBoxコンソール）
 
-## VirtualBoxでCentOS 6のイメージを作成
+## VirtualBoxでCentOS 7のイメージを作成
 - 名前: centos7
 - タイプ: Linux
 - バージョン: Red Hat (64-bit)
